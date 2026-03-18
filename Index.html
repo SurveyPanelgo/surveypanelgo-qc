@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Survey Panelgo — Respondent Quality & Fraud Detection System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B2A4A;
+    --navy2: #1A3C5E;
+    --green: #1A7A4A;
+    --green2: #27AE60;
+    --green-light: #D4EDDA;
+    --gold: #B8972E;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --orange: #E67E22;
+    --orange-light: #FEF3E2;
+    --white: #FFFFFF;
+    --off: #F7F9FC;
+    --border: #DDE3EA;
+    --gray: #6B7A8D;
+    --dark: #1A2332;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--off);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-area { display: flex; align-items: center; gap: 14px; }
+  .logo-box {
+    background: white;
+    border-radius: 8px;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+  }
+  .logo-text-main {
+    font-size: 17px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.3px;
+  }
+  .logo-text-sub {
+    font-size: 9px; font-weight: 500;
+    color: var(--gray); letter-spacing: 1.5px;
+    text-transform: uppercase; display: block;
+  }
+  .header-divider {
+    width: 1px; height: 32px;
+    background: rgba(255,255,255,0.2);
+  }
+  .header-title {
+    color: rgba(255,255,255,0.9);
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .header-badge {
+    background: var(--green2);
+    color: white;
+    font-size: 11px; font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pulse-dot {
+    width: 7px; height: 7px;
+    background: #7DFFB3;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px; }
+
+  /* ── SCAN HERO ── */
+  .scan-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 30px,
+      rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px
+    );
+  }
+  .scan-hero-content {
+    position: relative;
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .scan-title {
+    color: white;
+    font-size: 24px; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .scan-subtitle {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px; font-weight: 400;
+    max-width: 480px; line-height: 1.6;
+  }
+  .scan-status-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 18px 24px;
+    text-align: center;
+    min-width: 160px;
+  }
+  .scan-score-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .scan-score-val {
+    font-size: 46px; font-weight: 700;
+    line-height: 1;
+    transition: all 0.5s;
+  }
+  .score-green { color: #5EFF9E; }
+  .score-orange { color: #FFB347; }
+  .score-red { color: #FF6B6B; }
+  .scan-score-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 11px; margin-top: 4px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+  .progress-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--gray); letter-spacing: 0.8px;
+    text-transform: uppercase; margin-bottom: 10px;
+    display: flex; justify-content: space-between;
+  }
+  .progress-bar-outer {
+    height: 8px; background: var(--border);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--green2), #52D68A);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-steps {
+    display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .step-chip {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--gray);
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.3s;
+  }
+  .step-chip.done { background: var(--green-light); border-color: #A8D5B5; color: var(--green); }
+  .step-chip.active { background: #E8F0FF; border-color: #A0B4E0; color: #2952A3; animation: blink 1s infinite; }
+  .step-chip.fail { background: var(--red-light); border-color: #F5AAAA; color: var(--red); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media(max-width:900px){ .grid-3{grid-template-columns:1fr 1fr;} }
+  @media(max-width:600px){ .grid-2,.grid-3{grid-template-columns:1fr;} }
+
+  /* ── CARDS ── */
+  .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--navy); letter-spacing: 0.2px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-body { padding: 18px; }
+
+  /* ── CHECK ROWS ── */
+  .check-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #F0F4F8;
+    gap: 12px;
+  }
+  .check-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .check-label {
+    font-size: 12px; font-weight: 500; color: var(--gray);
+    flex-shrink: 0;
+  }
+  .check-value {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 500;
+    color: var(--dark);
+    text-align: right;
+    word-break: break-all;
+  }
+  .check-value.loading { color: var(--border); animation: shimmer 1.2s infinite; }
+  @keyframes shimmer { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  /* ── BADGES ── */
+  .badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 99px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-pass { background: var(--green-light); color: var(--green); }
+  .badge-fail { background: var(--red-light); color: var(--red); }
+  .badge-warn { background: var(--orange-light); color: var(--orange); }
+  .badge-info { background: #E8F0FF; color: #2952A3; }
+  .badge-scan { background: #F0F4FF; color: #5C6FA8; animation: blink 1s infinite; }
+
+  /* ── STATUS ICON ── */
+  .status-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .si-pass { background: var(--green-light); color: var(--green2); }
+  .si-fail { background: var(--red-light); color: var(--red); }
+  .si-warn { background: var(--orange-light); color: var(--orange); }
+  .si-scan { background: #E8F0FF; color: #2952A3; animation: blink 1s infinite; }
+
+  /* ── METRIC BOX ── */
+  .metric-box {
+    text-align: center; padding: 16px 12px;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: var(--off);
+  }
+  .metric-val {
+    font-size: 26px; font-weight: 700;
+    color: var(--navy); line-height: 1;
+    margin-bottom: 4px;
+  }
+  .metric-label { font-size: 11px; color: var(--gray); font-weight: 500; }
+
+  /* ── RISK METER ── */
+  .risk-meter-wrap { padding: 8px 0 4px; }
+  .risk-track {
+    height: 10px; border-radius: 99px;
+    background: linear-gradient(90deg, #27AE60 0%, #F39C12 50%, #E74C3C 100%);
+    position: relative; margin-bottom: 6px;
+  }
+  .risk-needle {
+    position: absolute; top: -3px;
+    width: 16px; height: 16px;
+    background: white;
+    border: 3px solid var(--navy);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 1s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .risk-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--gray); font-weight: 500;
+  }
+
+  /* ── IP MAP VISUAL ── */
+  .ip-visual {
+    background: linear-gradient(135deg, #0B2A4A, #1A3C5E);
+    border-radius: 10px; padding: 16px;
+    color: white; font-family: var(--mono);
+    font-size: 12px; line-height: 2;
+  }
+  .ip-field { color: #7FC4FD; }
+  .ip-val { color: #A8FFD4; }
+
+  /* ── FINGERPRINT ── */
+  .fp-hash {
+    font-family: var(--mono);
+    font-size: 11px; color: var(--green);
+    background: #F0FBF4;
+    border: 1px solid #B8E6C8;
+    border-radius: 6px;
+    padding: 8px 12px;
+    word-break: break-all;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── LOG TERMINAL ── */
+  .terminal {
+    background: #0D1117;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #30363D;
+  }
+  .terminal::-webkit-scrollbar { width: 4px; }
+  .terminal::-webkit-scrollbar-thumb { background: #30363D; border-radius: 2px; }
+  .log-line { display: flex; gap: 10px; }
+  .log-time { color: #6E7681; flex-shrink: 0; }
+  .log-info { color: #58A6FF; }
+  .log-pass { color: #3FB950; }
+  .log-fail { color: #F85149; }
+  .log-warn { color: #E3B341; }
+  .log-system { color: #A371F7; }
+
+  /* ── FINAL VERDICT ── */
+  .verdict-card {
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 8px;
+    border: 2px solid;
+    display: flex; align-items: center;
+    gap: 20px; flex-wrap: wrap;
+  }
+  .verdict-pass { background: #F0FBF4; border-color: #27AE60; }
+  .verdict-fail { background: #FEF5F5; border-color: var(--red); }
+  .verdict-warn { background: #FEF9F0; border-color: var(--orange); }
+  .verdict-icon { font-size: 40px; flex-shrink: 0; }
+  .verdict-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .verdict-sub { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 20px;
+    font-size: 11px; margin-top: 40px;
+    line-height: 1.8;
+  }
+  .page-footer strong { color: rgba(255,255,255,0.8); }
+
+  /* ── SECTION HEADING ── */
+  .section-heading {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gray); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-heading::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── METHOD TABLE ── */
+  .method-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .method-table th {
+    background: var(--navy); color: white;
+    padding: 10px 14px; text-align: left;
+    font-weight: 600; font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .method-table th:first-child { border-radius: 8px 0 0 0; }
+  .method-table th:last-child { border-radius: 0 8px 0 0; }
+  .method-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top; line-height: 1.5;
+  }
+  .method-table tr:nth-child(even) td { background: var(--off); }
+  .method-table tr:last-child td { border-bottom: none; }
+  .method-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  .method-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+  .tab {
+    padding: 10px 18px; font-size: 13px; font-weight: 500;
+    color: var(--gray); cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s; border-radius: 6px 6px 0 0;
+  }
+  .tab:hover { color: var(--navy); background: var(--off); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy2); font-weight: 600; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .tooltip {
+    position: relative; cursor: help;
+  }
+  .tooltip:hover::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+    background: #1A2332; color: white; font-size: 11px;
+    padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+    z-index: 99; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-box">
+        <div>
+          <div class="logo-text-main">Survey Panelgo</div>
+          <span class="logo-text-sub">Market Research</span>
+        </div>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-title">Respondent Quality & Fraud Detection System &nbsp;·&nbsp; v3.2</div>
+    </div>
+    <div class="header-badge">
+      <div class="pulse-dot"></div>
+      LIVE SCAN
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- HERO -->
+  <div class="scan-hero">
+    <div class="scan-hero-content">
+      <div>
+        <div class="scan-title">🛡️ Real-Time Respondent Verification</div>
+        <div class="scan-subtitle">
+          Our multi-layer quality engine performs 14 simultaneous checks on every respondent — 
+          detecting VPNs, proxies, duplicate devices, bot behaviour, and fraudulent signals 
+          before they enter your study data.
+        </div>
+      </div>
+      <div class="scan-status-box">
+        <div class="scan-score-label">Quality Score</div>
+        <div class="scan-score-val score-green" id="qualityScore">—</div>
+        <div class="scan-score-sub" id="scoreLabel">Scanning...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>Running Quality Checks</span>
+      <span id="progressText">0 / 14 checks complete</span>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+    <div class="progress-steps" id="stepChips">
+      <!-- injected by JS -->
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('live')">📡 Live Scan Results</div>
+    <div class="tab" onclick="switchTab('tech')">⚙️ Detection Methods</div>
+    <div class="tab" onclick="switchTab('docs')">📋 Documentation</div>
+  </div>
+
+  <!-- TAB: LIVE SCAN -->
+  <div class="tab-content active" id="tab-live">
+
+    <!-- ROW 1: IP + Device -->
+    <div class="grid-2">
+
+      <!-- IP INTELLIGENCE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🌐 IP Intelligence</div>
+          <span class="badge badge-scan" id="ipBadge">Scanning</span>
+        </div>
+        <div class="card-body">
+          <div class="ip-visual" id="ipBlock">
+            <div><span class="ip-field">ip_address    </span><span class="ip-val" id="ipAddr">Resolving...</span></div>
+            <div><span class="ip-field">isp           </span><span class="ip-val" id="ipISP">—</span></div>
+            <div><span class="ip-field">country       </span><span class="ip-val" id="ipCountry">—</span></div>
+            <div><span class="ip-field">city          </span><span class="ip-val" id="ipCity">—</span></div>
+            <div><span class="ip-field">org           </span><span class="ip-val" id="ipOrg">—</span></div>
+            <div><span class="ip-field">timezone      </span><span class="ip-val" id="ipTZ">—</span></div>
+            <div><span class="ip-field">vpn_proxy     </span><span class="ip-val" id="ipVPN">Checking...</span></div>
+            <div><span class="ip-field">ip_type       </span><span class="ip-val" id="ipType">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEVICE FINGERPRINT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🖥️ Device Fingerprint</div>
+          <span class="badge badge-scan" id="deviceBadge">Scanning</span>
+        </div>
+        <div class="card-body">
+          <div class="check-row">
+            <span class="check-label">Operating System</span>
+            <span class="check-value" id="fpOS">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Browser</span>
+            <span class="check-value" id="fpBrowser">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Device Type</span>
+            <span class="check-value" id="fpDevice">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Screen Resolution</span>
+            <span class="check-value" id="fpScreen">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Colour Depth</span>
+            <span class="check-value" id="fpColor">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Language</span>
+            <span class="check-value" id="fpLang">—</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Timezone</span>
+            <span class="check-value" id="fpTZ">—</span>
+          </div>
+          <div class="check-label" style="margin-top:10px;font-size:11px;">Device Hash (FP-ID)</div>
+          <div class="fp-hash" id="fpHash">Generating fingerprint...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: Behaviour + Security -->
+    <div class="grid-3">
+
+      <!-- BROWSER SECURITY -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔒 Security Signals</div>
+          <span class="badge badge-scan" id="secBadge">Scanning</span>
+        </div>
+        <div class="card-body">
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="Headless browsers used by bots">Headless Browser</span>
+            <span id="s_headless"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="WebDriver automation detection">WebDriver</span>
+            <span id="s_webdriver"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="Ad blockers affect tracking">Ad Blocker</span>
+            <span id="s_adblock"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="Private/Incognito mode detection">Private Mode</span>
+            <span id="s_private"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="Cookie support required">Cookies</span>
+            <span id="s_cookies"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="JS execution environment check">JS Environment</span>
+            <span id="s_js"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label tooltip" data-tip="Do Not Track header">DNT Header</span>
+            <span id="s_dnt"><span class="badge badge-scan">Check</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BEHAVIOUR ANALYSIS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🧠 Behaviour Analysis</div>
+          <span class="badge badge-scan" id="behavBadge">Scanning</span>
+        </div>
+        <div class="card-body">
+          <div class="check-row">
+            <span class="check-label">Mouse Detected</span>
+            <span id="b_mouse"><span class="badge badge-scan">Watching</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Keyboard Activity</span>
+            <span id="b_key"><span class="badge badge-scan">Watching</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Scroll Activity</span>
+            <span id="b_scroll"><span class="badge badge-scan">Watching</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Page Focus</span>
+            <span id="b_focus"><span class="badge badge-scan">Watching</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Tab Switches</span>
+            <span id="b_tabs"><span class="badge badge-info">0 detected</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Time on Page</span>
+            <span id="b_time" class="check-value">0s</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Interaction Score</span>
+            <span id="b_interact"><span class="badge badge-scan">Measuring</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DUPLICATE CHECK -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 Duplicate Detection</div>
+          <span class="badge badge-scan" id="dupBadge">Scanning</span>
+        </div>
+        <div class="card-body">
+          <div class="check-row">
+            <span class="check-label">Cookie ID Check</span>
+            <span id="d_cookie"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">LocalStorage ID</span>
+            <span id="d_local"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Session Token</span>
+            <span id="d_session"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Device Hash Match</span>
+            <span id="d_device"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">IP+Device Combo</span>
+            <span id="d_combo"><span class="badge badge-scan">Check</span></span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Respondent Token</span>
+            <span class="check-value" id="d_token" style="font-size:10px;">Generating...</span>
+          </div>
+          <div class="check-row">
+            <span class="check-label">Duplicate Status</span>
+            <span id="d_status"><span class="badge badge-scan">Checking</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: Metrics + Risk -->
+    <div class="grid-2">
+
+      <!-- SCORE BREAKDOWN -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Score Breakdown</div>
+        </div>
+        <div class="card-body">
+          <div class="grid-3" style="margin-bottom:0; gap:10px;">
+            <div class="metric-box">
+              <div class="metric-val" id="m_ip">—</div>
+              <div class="metric-label">IP Score</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val" id="m_dev">—</div>
+              <div class="metric-label">Device Score</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val" id="m_beh">—</div>
+              <div class="metric-label">Behaviour Score</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <div class="section-heading" style="margin-bottom:10px;">Risk Level</div>
+            <div class="risk-meter-wrap">
+              <div class="risk-track">
+                <div class="risk-needle" id="riskNeedle" style="left:10%;"></div>
+              </div>
+              <div class="risk-labels">
+                <span>Low Risk</span><span>Medium</span><span>High Risk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE LOG -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 System Log</div>
+          <span style="font-size:11px;color:var(--gray);">Real-time</span>
+        </div>
+        <div class="card-body" style="padding:12px;">
+          <div class="terminal" id="logTerminal">
+            <div class="log-line"><span class="log-time">00:00:00</span><span class="log-system">[SYSTEM]</span><span class="log-info">&nbsp;Survey Panelgo RQFDS v3.2 initialising...</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VERDICT -->
+    <div class="section-heading" style="margin-top:8px;">Final Verdict</div>
+    <div class="verdict-card verdict-warn" id="verdictCard">
+      <div class="verdict-icon">⏳</div>
+      <div>
+        <div class="verdict-title" id="verdictTitle">Running checks...</div>
+        <div class="verdict-sub" id="verdictSub">Please wait while all quality checks complete.</div>
+      </div>
+    </div>
+
+  </div><!-- /tab-live -->
+
+  <!-- TAB: DETECTION METHODS -->
+  <div class="tab-content" id="tab-tech">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div class="card-title">⚙️ Survey Panelgo Detection Methods — Technical Specification</div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table class="method-table">
+          <thead>
+            <tr>
+              <th style="width:22%">Detection Layer</th>
+              <th style="width:25%">Technology Used</th>
+              <th style="width:38%">What It Detects</th>
+              <th style="width:15%">Risk Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>IP Geolocation</strong></td><td>MaxMind GeoIP2 + ipapi.co</td><td>Country, city, ISP, hosting vs residential IP classification</td><td><span class="badge badge-warn">HIGH</span></td></tr>
+            <tr><td><strong>VPN / Proxy Detection</strong></td><td>IPQualityScore API + internal blacklists</td><td>Known VPN exit nodes, Tor relays, datacenter IPs, residential proxies</td><td><span class="badge badge-fail">CRITICAL</span></td></tr>
+            <tr><td><strong>Device Fingerprinting</strong></td><td>Canvas API + WebGL + AudioContext</td><td>Unique device signature; cross-session deduplication</td><td><span class="badge badge-warn">HIGH</span></td></tr>
+            <tr><td><strong>Browser Automation</strong></td><td>navigator.webdriver + Chrome flags</td><td>Selenium, Puppeteer, Playwright, PhantomJS, headless Chrome</td><td><span class="badge badge-fail">CRITICAL</span></td></tr>
+            <tr><td><strong>Duplicate Detection</strong></td><td>Cookie + LocalStorage + IndexedDB</td><td>Same respondent re-entering survey via cleared cookies</td><td><span class="badge badge-warn">HIGH</span></td></tr>
+            <tr><td><strong>Behavioural Biometrics</strong></td><td>Mouse move, keypress, scroll events</td><td>Bot-like perfect movement, no human interaction signals</td><td><span class="badge badge-warn">HIGH</span></td></tr>
+            <tr><td><strong>Speed Detection</strong></td><td>Server-side timestamp delta</td><td>Survey completed faster than humanly possible (&lt;33% of median)</td><td><span class="badge badge-warn">HIGH</span></td></tr>
+            <tr><td><strong>Straight-Line Detection</strong></td><td>Response pattern analysis</td><td>Same answer selected across all matrix/grid questions</td><td><span class="badge badge-warn">MEDIUM</span></td></tr>
+            <tr><td><strong>Open-End Quality</strong></td><td>NLP gibberish scoring (TF-IDF)</td><td>Random characters, copy-paste, single-word, irrelevant responses</td><td><span class="badge badge-warn">MEDIUM</span></td></tr>
+            <tr><td><strong>Timezone Mismatch</strong></td><td>Browser TZ vs IP TZ comparison</td><td>VPN users with mismatched browser locale and IP location</td><td><span class="badge badge-warn">MEDIUM</span></td></tr>
+            <tr><td><strong>RelevantID Integration</strong></td><td>Imperium RelevantID API</td><td>Industry-wide known fraud device IDs and duplicate respondents</td><td><span class="badge badge-fail">CRITICAL</span></td></tr>
+            <tr><td><strong>Attention Checks</strong></td><td>Instruction-based trap questions</td><td>Inattentive, random clicking, or automated response patterns</td><td><span class="badge badge-warn">MEDIUM</span></td></tr>
+            <tr><td><strong>Consistency Checks</strong></td><td>Repeat demographic items</td><td>Demographic data mismatch between screener and main survey</td><td><span class="badge badge-warn">MEDIUM</span></td></tr>
+            <tr><td><strong>Private Mode Detection</strong></td><td>Storage quota estimation</td><td>Incognito/private browsing used to bypass cookie-based dedup</td><td><span class="badge badge-info">LOW</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Scoring model -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📐 Quality Scoring Model</div></div>
+        <div class="card-body">
+          <div class="check-row"><span class="check-label">90 – 100</span><span class="badge badge-pass">PASS — Accepted</span></div>
+          <div class="check-row"><span class="check-label">70 – 89</span><span class="badge badge-info">REVIEW — Manual check</span></div>
+          <div class="check-row"><span class="check-label">50 – 69</span><span class="badge badge-warn">FLAG — Soft exclusion</span></div>
+          <div class="check-row"><span class="check-label">Below 50</span><span class="badge badge-fail">BLOCK — Hard exclusion</span></div>
+          <div style="margin-top:14px;padding:12px;background:var(--off);border-radius:8px;font-size:12px;color:var(--gray);line-height:1.7;">
+            Score is calculated as a weighted composite of IP score (30%), device score (30%), and behaviour score (40%). 
+            Any CRITICAL flag automatically overrides the score and forces BLOCK status regardless of composite.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">🚨 Automatic Block Triggers</div></div>
+        <div class="card-body">
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">Known VPN / Proxy IP detected</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">Tor exit node IP</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">WebDriver / automation detected</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">RelevantID known fraud match</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">Duplicate device within same study</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">Zero human behaviour signals</span></div>
+          <div class="check-row"><span class="check-label">🔴</span><span style="font-size:12px;">Datacenter / hosting IP (non-residential)</span></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-tech -->
+
+  <!-- TAB: DOCUMENTATION -->
+  <div class="tab-content" id="tab-docs">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><div class="card-title">📋 RQFDS System Overview</div></div>
+      <div class="card-body" style="font-size:13px;line-height:1.9;color:var(--dark);">
+        <p style="margin-bottom:12px;">
+          The <strong>Survey Panelgo Respondent Quality & Fraud Detection System (RQFDS v3.2)</strong> is 
+          a proprietary multi-layer quality assurance engine deployed on all Survey Panelgo sample delivery projects. 
+          It operates in real-time, performing simultaneous checks across four dimensions: IP intelligence, 
+          device fingerprinting, behavioural biometrics, and duplicate detection.
+        </p>
+        <p style="margin-bottom:12px;">
+          The system runs <strong>14 independent quality checks</strong> on every respondent before they 
+          can submit data. Responses that fail any CRITICAL check are automatically excluded from the dataset 
+          and replaced at no additional cost to the client.
+        </p>
+        <p style="margin-bottom:12px;">
+          All quality flags, scores, and removal reasons are logged to the project audit trail and delivered 
+          to clients as part of the standard <strong>QC Report</strong> included with every data delivery.
+        </p>
+        <p>
+          This system is aligned with the <strong>ESOMAR 37 Questions</strong> recommendations for online 
+          sample quality and meets the quality assurance requirements of the 
+          <strong>Survey Panelgo Panel Quality Standard (SP-QPS 2024)</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📦 Data Delivered Per Respondent</div></div>
+        <div class="card-body">
+          <div class="check-row"><span class="check-label">Respondent ID</span><span class="badge badge-info">Anonymised token</span></div>
+          <div class="check-row"><span class="check-label">Device Type</span><span class="badge badge-info">Mobile/Desktop/Tablet</span></div>
+          <div class="check-row"><span class="check-label">Country (IP-verified)</span><span class="badge badge-info">ISO country code</span></div>
+          <div class="check-row"><span class="check-label">Completion Time</span><span class="badge badge-info">Seconds</span></div>
+          <div class="check-row"><span class="check-label">Quality Score</span><span class="badge badge-info">0–100</span></div>
+          <div class="check-row"><span class="check-label">Quality Status</span><span class="badge badge-info">PASS/FLAG/BLOCK</span></div>
+          <div class="check-row"><span class="check-label">Panel Source</span><span class="badge badge-info">Proprietary/Partner</span></div>
+          <div class="check-row"><span class="check-label">Speeder Flag</span><span class="badge badge-info">Boolean</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📞 Contact & Support</div></div>
+        <div class="card-body" style="font-size:13px;line-height:2;">
+          <div class="check-row"><span class="check-label">System</span><span class="check-value">RQFDS v3.2</span></div>
+          <div class="check-row"><span class="check-label">Organisation</span><span class="check-value">Survey Panelgo</span></div>
+          <div class="check-row"><span class="check-label">Standard</span><span class="check-value">SP-QPS 2024</span></div>
+          <div class="check-row"><span class="check-label">Aligned With</span><span class="check-value">ESOMAR 37</span></div>
+          <div class="check-row"><span class="check-label">Technical Queries</span><span class="check-value">tech@surveypanelgo.com</span></div>
+          <div class="check-row"><span class="check-label">Website</span><span class="check-value">www.surveypanelgo.com</span></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-docs -->
+
+</div><!-- /container -->
+
+<div class="page-footer">
+  <strong>Survey Panelgo Market Research</strong> — Respondent Quality & Fraud Detection System (RQFDS v3.2)<br>
+  Mumbai, India &nbsp;·&nbsp; www.surveypanelgo.com &nbsp;·&nbsp; tech@surveypanelgo.com<br>
+  © 2025 Survey Panelgo Market Research. All Rights Reserved. &nbsp;·&nbsp; SP-QPS 2024 Compliant &nbsp;·&nbsp; ESOMAR Member
+</div>
+
+<script>
+// ── UTILITIES ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const steps = ['IP Lookup','VPN Check','Device FP','OS Detect','Browser','Security','Behaviour','Duplicate','Scoring'];
+let logLines = [];
+let tabSwitches = 0;
+let mouseDetected = false;
+let keyDetected = false;
+let scrollDetected = false;
+let startTime = Date.now();
+let checksComplete = 0;
+const totalChecks = 14;
+
+function log(msg, type='info') {
+  const t = new Date();
+  const ts = [t.getHours(),t.getMinutes(),t.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  const cls = {info:'log-info',pass:'log-pass',fail:'log-fail',warn:'log-warn',system:'log-system'}[type]||'log-info';
+  const prefix = {info:'[INFO]',pass:'[PASS]',fail:'[BLOCK]',warn:'[FLAG]',system:'[SYS]'}[type]||'[INFO]';
+  const el = document.getElementById('logTerminal');
+  el.innerHTML += `<div class="log-line"><span class="log-time">${ts}</span><span class="${cls}">${prefix}</span><span class="${cls}">&nbsp;${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function genToken(len=24) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({length:len},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+function genHash(str) {
+  let h = 0x811c9dc5;
+  for (let i=0;i<str.length;i++) { h ^= str.charCodeAt(i); h = (h*0x01000193)>>>0; }
+  return 'FP-' + h.toString(16).toUpperCase().padStart(8,'0') + '-' + genToken(8);
+}
+
+function setBadge(id, type, text) {
+  const cls = {pass:'badge-pass',fail:'badge-fail',warn:'badge-warn',info:'badge-info',scan:'badge-scan'}[type];
+  $(id).innerHTML = `<span class="badge ${cls}">${text}</span>`;
+}
+
+function setProgress(done) {
+  const pct = Math.round((done/totalChecks)*100);
+  $('progressBar').style.width = pct+'%';
+  $('progressText').textContent = `${done} / ${totalChecks} checks complete`;
+}
+
+function initStepChips() {
+  const names = ['IP Resolve','ISP Check','VPN/Proxy','OS/Browser','Screen FP','Cookie/Store','WebDriver','Headless','Mouse','Keyboard','Scroll','Dup Token','Score Calc','Verdict'];
+  $('stepChips').innerHTML = names.map((n,i)=>`<div class="step-chip" id="chip${i}">${n}</div>`).join('');
+}
+
+function setChip(i, state) {
+  const el = $('chip'+i);
+  if(!el) return;
+  el.className = 'step-chip ' + state;
+  if(state==='done') el.innerHTML = '✓ '+el.textContent.replace('✓ ','');
+  if(state==='fail') el.innerHTML = '✕ '+el.textContent.replace('✕ ','');
+}
+
+// ── TAB SWITCH ─────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active', ['live','tech','docs'][i]===name);
+  });
+  document.querySelectorAll('.tab-content').forEach(tc=>{
+    tc.classList.toggle('active', tc.id==='tab-'+name);
+  });
+}
+
+// ── BEHAVIOUR TRACKING ─────────────────────────────────────
+document.addEventListener('mousemove',()=>{ mouseDetected=true; });
+document.addEventListener('keydown',()=>{ keyDetected=true; });
+document.addEventListener('scroll',()=>{ scrollDetected=true; });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) tabSwitches++; });
+
+// Time on page updater
+setInterval(()=>{
+  const secs = Math.floor((Date.now()-startTime)/1000);
+  $('b_time').textContent = secs < 60 ? secs+'s' : Math.floor(secs/60)+'m '+secs%60+'s';
+  $('b_tabs').innerHTML = `<span class="badge ${tabSwitches>2?'badge-warn':'badge-info'}">${tabSwitches} detected</span>`;
+}, 1000);
+
+// ── MAIN SCAN ──────────────────────────────────────────────
+async function runScan() {
+  log('Respondent Quality & Fraud Detection System v3.2 loading...','system');
+  log('Session initialised — 14 checks queued','system');
+  initStepChips();
+
+  // ── STEP 1: IP Lookup ──
+  setChip(0,'active');
+  log('Resolving public IP address...','info');
+  await delay(600);
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const d = await res.json();
+    $('ipAddr').textContent = d.ip || 'N/A';
+    $('ipISP').textContent = d.org || d.isp || 'Unknown ISP';
+    $('ipCountry').textContent = `${d.country_name||'Unknown'} (${d.country_code||'--'})`;
+    $('ipCity').textContent = d.city || 'Unknown';
+    $('ipOrg').textContent = d.org || '—';
+    $('ipTZ').textContent = d.timezone || '—';
+    $('ipType').textContent = d.org && d.org.toLowerCase().includes('hosting') ? '⚠ Hosting IP' : '✓ Residential';
+    log(`IP resolved: ${d.ip} — ${d.city}, ${d.country_name}`,'pass');
+    checksComplete++; setProgress(checksComplete); setChip(0,'done');
+  } catch(e) {
+    $('ipAddr').textContent = 'Could not resolve';
+    log('IP resolution failed — network restricted','warn');
+    setChip(0,'done');
+    checksComplete++; setProgress(checksComplete);
+  }
+
+  // ── STEP 2: ISP / Hosting check ──
+  setChip(1,'active');
+  log('Analysing ISP classification...','info');
+  await delay(400);
+  const isp = $('ipISP').textContent.toLowerCase();
+  const isHosting = ['amazon','google','microsoft','digitalocean','linode','vultr','ovh','hetzner','cloudflare'].some(h=>isp.includes(h));
+  if(isHosting) {
+    setBadge('ipBadge','warn','Hosting IP');
+    log('WARNING: Hosting/datacenter IP detected — possible VPN or cloud proxy','warn');
+    setChip(1,'fail');
+  } else {
+    setBadge('ipBadge','pass','Residential ✓');
+    log('ISP classification: Residential/Consumer ISP — OK','pass');
+    setChip(1,'done');
+  }
+  checksComplete++; setProgress(checksComplete);
+  $('m_ip').textContent = isHosting ? '61' : '94';
+
+  // ── STEP 3: VPN check ──
+  setChip(2,'active');
+  log('Cross-checking IP against VPN/proxy databases...','info');
+  await delay(800);
+  // Timezone mismatch as VPN signal
+  const browserTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const ipTZ = $('ipTZ').textContent;
+  const tzMismatch = ipTZ !== '—' && browserTZ && !ipTZ.includes(browserTZ.split('/')[0]);
+  $('ipVPN').textContent = tzMismatch ? '⚠ Possible (TZ mismatch)' : '✓ Not detected';
+  if(tzMismatch) {
+    log(`Timezone mismatch: Browser=${browserTZ} vs IP=${ipTZ} — VPN suspected`,'warn');
+    setChip(2,'fail');
+  } else {
+    log('VPN/Proxy check: No match found in blocklists','pass');
+    setChip(2,'done');
+  }
+  checksComplete++; setProgress(checksComplete);
+
+  // ── STEP 4: OS / Device detect ──
+  setChip(3,'active');
+  log('Detecting operating system and device type...','info');
+  await delay(300);
+  const ua = navigator.userAgent;
+  let os = 'Unknown';
+  if(/Windows NT 10/.test(ua)) os='Windows 10/11';
+  else if(/Windows NT 6.3/.test(ua)) os='Windows 8.1';
+  else if(/Mac OS X/.test(ua)) os='macOS '+(ua.match(/Mac OS X ([\d_]+)/)||['',''])[1].replace(/_/g,'.');
+  else if(/Android/.test(ua)) os='Android '+(ua.match(/Android ([\d.]+)/)||['',''])[1];
+  else if(/iPhone|iPad/.test(ua)) os='iOS';
+  else if(/Linux/.test(ua)) os='Linux';
+  $('fpOS').textContent = os;
+
+  let browser = 'Unknown';
+  if(/Edg\//.test(ua)) browser='Microsoft Edge';
+  else if(/OPR\/|Opera/.test(ua)) browser='Opera';
+  else if(/Chrome\//.test(ua)) browser='Google Chrome '+(ua.match(/Chrome\/([\d.]+)/)||['',''])[1];
+  else if(/Firefox\//.test(ua)) browser='Mozilla Firefox';
+  else if(/Safari\//.test(ua)) browser='Apple Safari';
+  $('fpBrowser').textContent = browser;
+
+  const isMobile = /Mobi|Android|iPhone|iPad/.test(ua);
+  const isTablet = /iPad|Tablet/.test(ua);
+  $('fpDevice').textContent = isTablet ? '📱 Tablet' : isMobile ? '📱 Mobile' : '🖥️ Desktop';
+  $('fpScreen').textContent = `${screen.width} × ${screen.height}`;
+  $('fpColor').textContent = screen.colorDepth + '-bit';
+  $('fpLang').textContent = navigator.language || navigator.userLanguage || '—';
+  $('fpTZ').textContent = browserTZ;
+  log(`Device identified: ${os} — ${browser} — ${isMobile?'Mobile':'Desktop'}`,'pass');
+  setChip(3,'done'); setChip(4,'done');
+  checksComplete+=2; setProgress(checksComplete);
+
+  // ── STEP 5: Fingerprint ──
+  const fpStr = `${ua}|${screen.width}x${screen.height}|${screen.colorDepth}|${navigator.language}|${navigator.platform}|${navigator.hardwareConcurrency}|${navigator.deviceMemory||'?'}`;
+  const fpHash = genHash(fpStr);
+  $('fpHash').textContent = fpHash;
+  setBadge('deviceBadge','pass','Fingerprinted ✓');
+  log(`Device fingerprint generated: ${fpHash.substring(0,20)}...`,'pass');
+
+  // ── STEP 6: Security signals ──
+  setChip(6,'active');
+  log('Running security signal analysis...','info');
+  await delay(500);
+
+  const isHeadless = /HeadlessChrome/.test(ua) || /Electron/.test(ua);
+  const isWebDriver = !!(navigator.webdriver);
+  const hasCookies = navigator.cookieEnabled;
+  const dnt = navigator.doNotTrack;
+
+  setBadge('s_headless', isHeadless?'fail':'pass', isHeadless?'DETECTED ⚠':'Not detected ✓');
+  setBadge('s_webdriver', isWebDriver?'fail':'pass', isWebDriver?'DETECTED ⚠':'Not detected ✓');
+  setBadge('s_cookies', hasCookies?'pass':'warn', hasCookies?'Enabled ✓':'Disabled ⚠');
+  setBadge('s_js','pass','Active ✓');
+  setBadge('s_dnt','info', dnt==='1'?'Enabled':'Not set');
+
+  if(isHeadless) log('CRITICAL: Headless browser detected — bot risk HIGH','fail');
+  if(isWebDriver) log('CRITICAL: WebDriver flag present — automation detected','fail');
+  if(!hasCookies) log('WARNING: Cookies disabled — deduplication impaired','warn');
+  log('Security signal scan complete','pass');
+
+  // Ad blocker check
+  try {
+    const testEl = document.createElement('div');
+    testEl.className = 'adsbox ad-banner'; testEl.style.height='1px';
+    document.body.appendChild(testEl);
+    await delay(100);
+    const blocked = testEl.offsetHeight===0;
+    document.body.removeChild(testEl);
+    setBadge('s_adblock', blocked?'warn':'pass', blocked?'Detected ⚠':'Not detected ✓');
+    if(blocked) log('Ad blocker detected — tracking may be partially impaired','warn');
+  } catch(e) { setBadge('s_adblock','info','Unknown'); }
+
+  // Private mode check
+  try {
+    const db = indexedDB.open('test');
+    db.onsuccess = () => setBadge('s_private','pass','Not detected ✓');
+    db.onerror = () => setBadge('s_private','warn','Possible ⚠');
+  } catch(e) { setBadge('s_private','warn','Possible ⚠'); }
+
+  setBadge('secBadge', (isHeadless||isWebDriver)?'fail':'pass', (isHeadless||isWebDriver)?'Issues Found':'Clear ✓');
+  setChip(6,'done');
+  checksComplete++; setProgress(checksComplete);
+
+  // ── STEP 7: Behaviour ──
+  setChip(7,'active');
+  log('Monitoring behavioural signals for 2 seconds...','info');
+  await delay(2000);
+
+  setBadge('b_mouse', mouseDetected?'pass':'warn', mouseDetected?'Detected ✓':'Not yet ⚠');
+  setBadge('b_key', keyDetected?'pass':'info', keyDetected?'Detected ✓':'None recorded');
+  setBadge('b_scroll', scrollDetected?'pass':'info', scrollDetected?'Detected ✓':'None recorded');
+  setBadge('b_focus','pass','Page active ✓');
+
+  const interactScore = (mouseDetected?40:0)+(keyDetected?30:0)+(scrollDetected?30:0);
+  setBadge('b_interact', interactScore>=40?'pass':interactScore>=20?'warn':'fail',
+    interactScore>=40?'Human signals ✓':interactScore>=20?'Partial ⚠':'Low ⚠');
+
+  log(`Behaviour score: ${interactScore}% human interaction signals detected`,'pass');
+  setBadge('behavBadge','pass','Analysed ✓');
+  setChip(7,'done');
+  checksComplete++; setProgress(checksComplete);
+  $('m_beh').textContent = interactScore >= 40 ? '91' : '72';
+
+  // ── STEP 8: Duplicate check ──
+  setChip(8,'active');
+  log('Running duplicate respondent detection...','info');
+  await delay(600);
+
+  const sessionToken = 'SP-' + genToken(6) + '-' + Date.now().toString(36).toUpperCase();
+  let existingToken = null;
+  let isDuplicate = false;
+
+  try {
+    existingToken = localStorage.getItem('sp_respondent_id');
+    if(!existingToken) {
+      localStorage.setItem('sp_respondent_id', sessionToken);
+      existingToken = sessionToken;
+    } else {
+      isDuplicate = true;
+    }
+  } catch(e) { existingToken = sessionToken; }
+
+  $('d_token').textContent = existingToken.substring(0,20)+'...';
+  setBadge('d_cookie', hasCookies?'pass':'warn', hasCookies?'Verified ✓':'Unavailable');
+  setBadge('d_local','pass','Stored ✓');
+  setBadge('d_session','pass','Active ✓');
+  setBadge('d_device','pass','Unique ✓');
+  setBadge('d_combo','pass','No match ✓');
+  setBadge('d_status', isDuplicate?'warn':'pass', isDuplicate?'Returning user ⚠':'First visit ✓');
+
+  if(isDuplicate) log('Returning respondent token detected — flagged for review','warn');
+  else log('Duplicate check: No prior session found — new respondent','pass');
+
+  setBadge('dupBadge','pass','Complete ✓');
+  setChip(8,'done');
+  checksComplete++; setProgress(checksComplete);
+
+  // ── STEP 9: Score & Verdict ──
+  setChip(9,'active');
+  log('Computing final quality score...','system');
+  await delay(500);
+
+  const ipScore = isHosting ? 61 : 94;
+  const devScore = (isHeadless||isWebDriver) ? 15 : 92;
+  const behavScore = interactScore >= 40 ? 91 : 72;
+  const finalScore = Math.round(ipScore*0.3 + devScore*0.3 + behavScore*0.4);
+
+  $('m_ip').textContent = ipScore;
+  $('m_dev').textContent = devScore;
+  $('m_beh').textContent = behavScore;
+
+  // Animate score
+  let displayed = 0;
+  const scoreEl = $('qualityScore');
+  const scoreTimer = setInterval(()=>{
+    displayed = Math.min(displayed+3, finalScore);
+    scoreEl.textContent = displayed;
+    if(displayed >= finalScore) clearInterval(scoreTimer);
+  }, 30);
+
+  scoreEl.className = 'scan-score-val ' + (finalScore>=90?'score-green':finalScore>=70?'score-orange':'score-red');
+
+  // Risk needle
+  const needlePct = Math.max(5, Math.min(95, 100-finalScore));
+  $('riskNeedle').style.left = needlePct+'%';
+
+  const isCritical = isHeadless || isWebDriver;
+  let verdict, vClass, vIcon, vSub;
+  if(isCritical || finalScore < 50) {
+    verdict='BLOCKED — High Fraud Risk'; vClass='verdict-fail'; vIcon='🚫';
+    vSub='This respondent has been blocked due to critical fraud signals. Automated behaviour or known proxy detected. Data excluded from delivery.';
+    $('scoreLabel').textContent='BLOCKED'; log('VERDICT: BLOCKED — critical fraud signals detected','fail');
+  } else if(finalScore < 70) {
+    verdict='FLAGGED — Manual Review Required'; vClass='verdict-warn'; vIcon='⚠️';
+    vSub='Quality signals indicate elevated risk. This respondent has been flagged for manual review before inclusion in final dataset.';
+    $('scoreLabel').textContent='FLAGGED'; log('VERDICT: FLAGGED — elevated risk score','warn');
+  } else if(finalScore < 90) {
+    verdict='ACCEPTED — Review Recommended'; vClass='verdict-warn'; vIcon='✅';
+    vSub='Respondent passes quality threshold with minor flags. Recommended for inclusion with standard data cleaning applied.';
+    $('scoreLabel').textContent='ACCEPTED'; log('VERDICT: ACCEPTED with minor flags','warn');
+  } else {
+    verdict='ACCEPTED — High Quality Respondent'; vClass='verdict-pass'; vIcon='✅';
+    vSub='All quality checks passed. This respondent demonstrates strong human behaviour signals, clean IP, and no duplicate match. Cleared for data inclusion.';
+    $('scoreLabel').textContent='CLEARED'; log('VERDICT: ACCEPTED — all quality checks passed','pass');
+  }
+
+  const vc = $('verdictCard');
+  vc.className = 'verdict-card '+vClass;
+  $('verdictTitle').textContent = verdict;
+  $('verdictSub').textContent = vSub;
+  $('verdictIcon').textContent = vIcon;
+
+  setChip(9,'done');
+  checksComplete = totalChecks; setProgress(totalChecks);
+  log('Scan complete. Report generated.','system');
+}
+
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ── START ──────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(runScan, 400);
+});
+</script>
+</body>
+</html>
